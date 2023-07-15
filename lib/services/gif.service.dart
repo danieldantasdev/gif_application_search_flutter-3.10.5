@@ -8,18 +8,18 @@ import '../utils/utils.dart';
 class GifService {
   final HttpUtil _httpUtil = HttpUtil();
 
-  Future<Gif> getSearch(String? search, int? offset) async {
+  Future<Gif> getSearch(String? search, int? offset, int? limit) async {
     http.Response response;
 
-    if (search == null) {
+    if (search!.isEmpty) {
       response = await http.get(
         Uri.parse(
-            "${_httpUtil.baseUrl}/trending?api_key=WV3kFtmsxHMzKBKkbxziAH4TpWoWOkN2&limit=25&offset=0&rating=g&bundle=messaging_non_clips"),
+            "${_httpUtil.baseUrl}/trending?api_key=WV3kFtmsxHMzKBKkbxziAH4TpWoWOkN2&limit=$limit&offset=0&rating=g&bundle=messaging_non_clips"),
       );
     } else {
       response = await http.get(
         Uri.parse(
-            "${_httpUtil.baseUrl}/search?api_key=WV3kFtmsxHMzKBKkbxziAH4TpWoWOkN2&q=$search&limit=25&offset=$offset&rating=g&lang=en&bundle=messaging_non_clips"),
+            "${_httpUtil.baseUrl}/search?api_key=WV3kFtmsxHMzKBKkbxziAH4TpWoWOkN2&q=$search&limit=$limit&offset=$offset&rating=g&lang=en&bundle=messaging_non_clips"),
       );
     }
 

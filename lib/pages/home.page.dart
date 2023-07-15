@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gif/models/gif.model.dart';
 
 import '../services/services.dart';
 
@@ -14,8 +15,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GifService _gifService = GifService();
 
-  String? _search;
-  int? _offset;
+  String _search = "";
+  int _limit = 50;
+  int _offset = 25;
 
   Widget _isLoading() {
     return Container(
@@ -32,23 +34,58 @@ class _HomePageState extends State<HomePage> {
   Widget _onCreatedGifTable(
       BuildContext buildContext, AsyncSnapshot asyncSnapshot) {
     return GridView.builder(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.00),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: 3,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
-      itemCount: asyncSnapshot.data.data.length,
+      // itemCount: asyncSnapshot.data.data.length,
+      itemCount: _getCount(asyncSnapshot.data),
       itemBuilder: (context, index) {
-        return GestureDetector(
-          child: Image.network(
-            asyncSnapshot.data.data[index].images.fixedHeight.url,
-            height: 300,
-            fit: BoxFit.cover,
-          ),
-        );
+        if (_search!.isEmpty || index < asyncSnapshot.data.data.length) {
+          return GestureDetector(
+            child: Image.network(
+              asyncSnapshot.data.data[index].images.fixedHeight.url,
+              height: 300,
+              fit: BoxFit.cover,
+            ),
+          );
+        } else {
+          return Container(
+              child: GestureDetector(
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 70,
+                ),
+                Text(
+                  "Carregar mais...",
+                  style: TextStyle(color: Colors.white, fontSize: 10.0),
+                ),
+              ],
+            ),
+            onTap: () {
+              setState(() {
+                _offset != null ? _offset = (_offset! + 19)! : 0;
+                // _limit = asyncSnapshot.data.data.length;
+              });
+            },
+          ));
+        }
       },
     );
+  }
+
+  int? _getCount(Gif gif) {
+    if (_search!.isEmpty) {
+      return gif.data?.length;
+    } else {
+      return (gif.data!.length + 1);
+    }
   }
 
   @override
@@ -67,14 +104,14 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Pesquise aqui:",
                 labelStyle: TextStyle(
                   color: Colors.white,
                 ),
                 border: OutlineInputBorder(),
               ),
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
               ),
@@ -82,12 +119,13 @@ class _HomePageState extends State<HomePage> {
               onSubmitted: (text) {
                 setState(() {
                   _search = text;
+                  _offset = 0;
                 });
               },
             ),
             Expanded(
               child: FutureBuilder(
-                future: _gifService.getSearch(_search, _offset),
+                future: _gifService.getSearch(_search, _offset, _limit),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
