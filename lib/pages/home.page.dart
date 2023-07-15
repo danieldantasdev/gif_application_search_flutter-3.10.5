@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:gif/models/gif.model.dart';
 import 'package:gif/pages/gif_detail.page.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../services/services.dart';
 
@@ -55,9 +56,10 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (context, index) {
         if (_search!.isEmpty || index < asyncSnapshot.data.data.length) {
           return GestureDetector(
-            child: Image.network(
-              asyncSnapshot.data.data[index].images.fixedHeight.url,
-              height: 300,
+            child: FadeInImage.memoryNetwork(
+              placeholder: kTransparentImage,
+              image: asyncSnapshot.data.data[index].images.fixedHeight.url,
+              height: 300.0,
               fit: BoxFit.cover,
             ),
             onTap: () {
