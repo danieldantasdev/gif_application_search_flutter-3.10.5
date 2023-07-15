@@ -14,8 +14,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GifService _gifService = GifService();
 
-  String? search = "dogs";
-  int? offset = 25;
+  String? _search;
+  int? _offset;
 
   Widget _isLoading() {
     return Container(
@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const TextField(
+            TextField(
               decoration: InputDecoration(
                 labelText: "Pesquise aqui:",
                 labelStyle: TextStyle(
@@ -79,10 +79,15 @@ class _HomePageState extends State<HomePage> {
                 fontSize: 20,
               ),
               textAlign: TextAlign.center,
+              onSubmitted: (text) {
+                setState(() {
+                  _search = text;
+                });
+              },
             ),
             Expanded(
               child: FutureBuilder(
-                future: _gifService.getSearch(search, offset),
+                future: _gifService.getSearch(_search, _offset),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
