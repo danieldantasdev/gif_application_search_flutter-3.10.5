@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:gif/models/gif.model.dart';
 import 'package:gif/pages/gif_detail.page.dart';
 
@@ -32,6 +33,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<void> _onLongPressed(AsyncSnapshot asyncSnapshot, int index) async {
+    await FlutterShare.share(
+      title: 'gif',
+      linkUrl: asyncSnapshot.data.data[index].images.fixedHeight.url as String,
+      chooserTitle: 'gif',
+    );
+  }
+
   Widget _onCreatedGifTable(
       BuildContext buildContext, AsyncSnapshot asyncSnapshot) {
     return GridView.builder(
@@ -60,6 +69,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             },
+            onLongPress: () {
+              _onLongPressed(asyncSnapshot, index);
+            },
           );
         } else {
           return Container(
@@ -79,10 +91,12 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             onTap: () {
-              setState(() {
-                _offset != null ? _offset = (_offset! + 19)! : 0;
-                // _limit = asyncSnapshot.data.data.length;
-              });
+              setState(
+                () {
+                  _offset != null ? _offset = (_offset! + 19)! : 0;
+                  // _limit = asyncSnapshot.data.data.length;
+                },
+              );
             },
           ));
         }
