@@ -15,9 +15,17 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
         hintColor: Colors.white,
+        actionIconTheme: ActionIconThemeData(
+          backButtonIconBuilder: (context) {
+            return const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            );
+          },
+        ),
       ),
       home: const HomePage(title: 'Flutter Demo Home Page'),
     );

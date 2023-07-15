@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gif/models/gif.model.dart';
+import 'package:gif/pages/gif_detail.page.dart';
 
 import '../services/services.dart';
 
@@ -50,6 +51,15 @@ class _HomePageState extends State<HomePage> {
               height: 300,
               fit: BoxFit.cover,
             ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      GifDetailPage(gif: asyncSnapshot.data.data[index]),
+                ),
+              );
+            },
           );
         } else {
           return Container(
