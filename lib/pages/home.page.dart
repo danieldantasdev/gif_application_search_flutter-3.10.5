@@ -42,67 +42,76 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<void> _onRefresh() async {
+    setState(() {
+      _gifService.getSearch(_search, _offset, _limit);
+    });
+  }
+
   Widget _onCreatedGifTable(
       BuildContext buildContext, AsyncSnapshot asyncSnapshot) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 10.00),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: GridView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 10.00),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        // itemCount: asyncSnapshot.data.data.length,
+        itemCount: _getCount(asyncSnapshot.data),
+        itemBuilder: (context, index) {
+          if (_search!.isEmpty || index < asyncSnapshot.data.data.length) {
+            return GestureDetector(
+              child: FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                image: asyncSnapshot.data.data[index].images.fixedHeight.url,
+                height: 300.0,
+                fit: BoxFit.cover,
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        GifDetailPage(gif: asyncSnapshot.data.data[index]),
+                  ),
+                );
+              },
+              onLongPress: () {
+                _onLongPressed(asyncSnapshot, index);
+              },
+            );
+          } else {
+            return Container(
+                child: GestureDetector(
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 70,
+                  ),
+                  Text(
+                    "Carregar mais...",
+                    style: TextStyle(color: Colors.white, fontSize: 10.0),
+                  ),
+                ],
+              ),
+              onTap: () {
+                setState(
+                  () {
+                    _offset != null ? _offset = (_offset! + 19)! : 0;
+                    // _limit = asyncSnapshot.data.data.length;
+                  },
+                );
+              },
+            ));
+          }
+        },
       ),
-      // itemCount: asyncSnapshot.data.data.length,
-      itemCount: _getCount(asyncSnapshot.data),
-      itemBuilder: (context, index) {
-        if (_search!.isEmpty || index < asyncSnapshot.data.data.length) {
-          return GestureDetector(
-            child: FadeInImage.memoryNetwork(
-              placeholder: kTransparentImage,
-              image: asyncSnapshot.data.data[index].images.fixedHeight.url,
-              height: 300.0,
-              fit: BoxFit.cover,
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      GifDetailPage(gif: asyncSnapshot.data.data[index]),
-                ),
-              );
-            },
-            onLongPress: () {
-              _onLongPressed(asyncSnapshot, index);
-            },
-          );
-        } else {
-          return Container(
-              child: GestureDetector(
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 70,
-                ),
-                Text(
-                  "Carregar mais...",
-                  style: TextStyle(color: Colors.white, fontSize: 10.0),
-                ),
-              ],
-            ),
-            onTap: () {
-              setState(
-                () {
-                  _offset != null ? _offset = (_offset! + 19)! : 0;
-                  // _limit = asyncSnapshot.data.data.length;
-                },
-              );
-            },
-          ));
-        }
-      },
     );
   }
 
